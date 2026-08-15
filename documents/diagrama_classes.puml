@@ -1,14 +1,16 @@
 @startuml
-title Diagrama de Classes - Orçamento de Aluguel\nImobiliária R.M. | Algorithmic Thinking & POO
+' ============================================================
+' Diagrama de Classes - Sistema de Orçamento de Aluguel
+' Imobiliária R.M. | Algorithmic Thinking & POO
+' ============================================================
 
-' ===== Domínio =====
 class Imovel <<abstract>> {
   # tipo : str
   # quartos : int
   # tem_garagem : bool
   # valor_base : float
   + {abstract} calcular_mensalidade() : float
-  + calcular_parcelas(contrato : Contrato) : list
+  + calcular_parcelas(contrato) : list
 }
 
 class Apartamento {
@@ -24,7 +26,6 @@ class Estudio {
   + calcular_mensalidade() : float
 }
 
-' ===== Apoio =====
 class Cliente {
   - nome : str
   - email : str
@@ -40,21 +41,14 @@ class Contrato {
 class Orcamento {
   - valor_mensal : float
   + gerar_orcamento() : Orcamento
-  + gerar_csv() : void
+  + gerar_csv(parcelas) : void
 }
 
 class ExportadorCSV {
   + exportar(orcamento : Orcamento) : void
 }
 
-' ===== Aplicação =====
-class InterfaceUsuario {
-  + iniciar() : void
-  + exibir_menu() : void
-  + capturar_dados() : void
-}
-
-' ===== Regras de negócio =====
+' --- Regras de negócio embutidas no diagrama ---
 note right of Apartamento
   Base R$ 700
   2º quarto: + R$ 200
@@ -74,7 +68,7 @@ note right of Estudio
   Vaga extra: + R$ 60
 end note
 
-' ===== Relacionamentos =====
+' --- Relacionamentos ---
 Imovel <|-- Apartamento
 Imovel <|-- Casa
 Imovel <|-- Estudio
@@ -82,7 +76,5 @@ Orcamento *-- Imovel : possui
 Orcamento *-- Cliente : possui
 Orcamento --> Contrato : usa
 Orcamento --> ExportadorCSV : usa
-InterfaceUsuario --> Orcamento : cria
-InterfaceUsuario --> Cliente : cria
 
 @enduml

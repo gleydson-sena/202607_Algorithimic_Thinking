@@ -1,0 +1,92 @@
+@startuml
+title Diagrama de Sequência (View/Controller/Service) - Gerar Orçamento\nImobiliária R.M. | Algorithmic Thinking & POO
+
+autonumber
+
+actor Usuario
+
+box "View" #E8F0FE
+  participant ":InterfaceUsuario" as VIEW
+end box
+
+box "Controller" #E6F4EA
+  participant ":OrcamentoController" as CTRL
+end box
+
+box "Service" #FFF8E1
+  participant ":OrcamentoService" as SVC
+  participant ":Cliente" as CLI
+  participant ":Imovel" as IMV
+  participant ":Orcamento" as ORC
+  participant ":Contrato" as CON
+  participant ":ExportadorCSV" as CSV
+end box
+
+' ===== 1. Entrada (RF-10, RF-01) =====
+Usuario -> VIEW : iniciar()
+VIEW -> VIEW : exibir_menu()
+
+Usuario -> VIEW : dados do cliente\n(nome, e-mail, tem_criancas)
+VIEW -> CTRL : processar_dados(dados_cliente)
+
+' ===== 2. Validação (RF-12) =====
+CTRL -> CTRL : validar_dados()
+alt dados inválidos
+  CTRL --> VIEW : erro
+  VIEW --> Usuario : mensagem de erro
+end
+
+' ===== 3. Delegação ao Service =====
+CTRL -> SVC : gerar_orcamento(dados)
+
+' ===== 4. Regras de negócio no Service (RF-02 a RF-07) =====
+SVC -> CLI : new Cliente(nome, email, tem_criancas)
+activate CLI
+CLI --> SVC : cliente
+deactivate CLI
+
+alt Apartamento
+  SVC -> IMV : new Apartamento(quartos, garagem)
+else Casa
+  SVC -> IMV : new Casa(quartos, garagem)
+else Estudio
+  SVC -> IMV : new Estudio(vagas)
+end
+activate IMV
+IMV --> SVC : imovel
+deactivate IMV
+
+SVC -> IMV : calcular_mensalidade()
+activate IMV
+IMV --> SVC : valor_mensal
+deactivate IMV
+
+SVC -> CON : new Contrato(2000.0, 5)
+activate CON
+SVC -> CON : calcular_parcelas()
+CON --> SVC : parcelas (até 5x)
+deactivate CON
+
+SVC -> ORC : new Orcamento(cliente, imovel, valor_mensal, parcelas)
+activate ORC
+ORC --> SVC : orcamento
+deactivate ORC
+
+' ===== 5. Retorno e exibição (RF-08) =====
+SVC --> CTRL : orcamento
+CTRL --> VIEW : exibir_resultado(orcamento)
+VIEW --> Usuario : orçamento mensal + parcelas
+
+' ===== 6. Exportação CSV (RF-09) =====
+Usuario -> VIEW : solicitar exportação .csv
+VIEW -> CTRL : exportar_csv()
+CTRL -> SVC : exportar_csv(orcamento)
+SVC -> CSV : exportar(orcamento)
+activate CSV
+CSV --> SVC : arquivo .csv
+deactivate CSV
+SVC --> CTRL : confirmação
+CTRL --> VIEW : confirmação
+VIEW --> Usuario : "orçamento.csv gerado"
+
+@enduml
