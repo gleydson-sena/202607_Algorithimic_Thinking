@@ -1,0 +1,88 @@
+@startuml
+title Diagrama de Classes - Orçamento de Aluguel\nImobiliária R.M. | Algorithmic Thinking & POO
+
+' ===== Domínio =====
+class Imovel <<abstract>> {
+  # tipo : str
+  # quartos : int
+  # tem_garagem : bool
+  # valor_base : float
+  + {abstract} calcular_mensalidade() : float
+  + calcular_parcelas(contrato : Contrato) : list
+}
+
+class Apartamento {
+  + calcular_mensalidade() : float
+}
+
+class Casa {
+  + calcular_mensalidade() : float
+}
+
+class Estudio {
+  - vagas : int
+  + calcular_mensalidade() : float
+}
+
+' ===== Apoio =====
+class Cliente {
+  - nome : str
+  - email : str
+  - tem_criancas : bool
+}
+
+class Contrato {
+  - valor_total : float = 2000.0
+  - max_parcelas : int = 5
+  + calcular_parcelas() : list
+}
+
+class Orcamento {
+  - valor_mensal : float
+  + gerar_orcamento() : Orcamento
+  + gerar_csv() : void
+}
+
+class ExportadorCSV {
+  + exportar(orcamento : Orcamento) : void
+}
+
+' ===== Aplicação =====
+class InterfaceUsuario {
+  + iniciar() : void
+  + exibir_menu() : void
+  + capturar_dados() : void
+}
+
+' ===== Regras de negócio =====
+note right of Apartamento
+  Base R$ 700
+  2º quarto: + R$ 200
+  Garagem: + R$ 300
+  Desconto 5% (sem crianças)
+end note
+
+note right of Casa
+  Base R$ 900
+  2º quarto: + R$ 250
+  Garagem: + R$ 300
+end note
+
+note right of Estudio
+  Base R$ 1.200
+  2 vagas: R$ 250
+  Vaga extra: + R$ 60
+end note
+
+' ===== Relacionamentos =====
+Imovel <|-- Apartamento
+Imovel <|-- Casa
+Imovel <|-- Estudio
+Orcamento *-- Imovel : possui
+Orcamento *-- Cliente : possui
+Orcamento --> Contrato : usa
+Orcamento --> ExportadorCSV : usa
+InterfaceUsuario --> Orcamento : cria
+InterfaceUsuario --> Cliente : cria
+
+@enduml
