@@ -10,7 +10,8 @@ class OrcamentoController:
         erros = []
         if not dados.get("nome") or not str(dados["nome"]).strip():
             erros.append("Informe o nome do cliente.")
-        if not dados.get("email") or "@" not in str(dados["email"]):
+        email = str(dados.get("email", "")).strip()
+        if email and "@" not in email:
             erros.append("Informe um e-mail válido.")
         if dados.get("tipo") not in TIPOS_VALIDOS:
             erros.append("Selecione um tipo de imóvel válido.")
