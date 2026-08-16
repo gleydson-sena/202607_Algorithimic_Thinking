@@ -1,4 +1,5 @@
-# model/orcamento.py — ESQUELETO (RED)
+from .contrato import Contrato
+
 class Orcamento:
     def __init__(self, cliente, imovel):
         self._cliente = cliente
@@ -20,8 +21,9 @@ class Orcamento:
 
     def gerar_orcamento(self):
         self._valor_mensal = self._imovel.calcular_mensalidade(self._cliente)
+        self._contrato = Contrato()
+        self._parcelas = self._contrato.calcular_parcelas()
         return self
 
     def gerar_parcelas_csv(self, total_meses=12) -> list:
-        # TODO: RED — deve retornar 12 parcelas mensais (RF-09)
-        return []
+        return [{"mes": i, "valor": self._valor_mensal} for i in range(1, total_meses + 1)]

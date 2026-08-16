@@ -1,9 +1,6 @@
-# model/imovel.py — ESQUELETO (RED)
 from abc import ABC, abstractmethod
 
 class Imovel(ABC):
-    """Classe abstrata — padrão Valor Base + Acréscimos - Desconto."""
-
     def __init__(self, tipo, quartos=1, tem_garagem=False, valor_base=0.0, vagas=0):
         self._tipo = tipo
         self._quartos = quartos
@@ -24,29 +21,42 @@ class Imovel(ABC):
 
     @abstractmethod
     def calcular_mensalidade(self, cliente) -> float:
-        """Polimorfismo: cada subclasse implementa sua regra."""
         ...
 
 class Apartamento(Imovel):
     def __init__(self, quartos=1, tem_garagem=False):
-        super().__init__("apartamento", quartos, tem_garagem, 0.0)
+        super().__init__("apartamento", quartos, tem_garagem, 700.0)
 
     def calcular_mensalidade(self, cliente) -> float:
-        # TODO: RED — base 700 + 2º quarto 200 + garagem 300 - 5% sem crianças
-        return 0.0
+        valor = self._valor_base
+        if self._quartos >= 2:
+            valor += 200.0
+        if self._tem_garagem:
+            valor += 300.0
+        if not cliente.tem_criancas:
+            valor *= 0.95
+        return round(valor, 2)
 
 class Casa(Imovel):
     def __init__(self, quartos=1, tem_garagem=False):
-        super().__init__("casa", quartos, tem_garagem, 0.0)
+        super().__init__("casa", quartos, tem_garagem, 900.0)
 
     def calcular_mensalidade(self, cliente) -> float:
-        # TODO: RED — base 900 + 2º quarto 250 + garagem 300
-        return 0.0
+        valor = self._valor_base
+        if self._quartos >= 2:
+            valor += 250.0
+        if self._tem_garagem:
+            valor += 300.0
+        return round(valor, 2)
 
 class Estudio(Imovel):
     def __init__(self, vagas=2):
-        super().__init__("estudio", 1, False, 0.0, vagas)
+        super().__init__("estudio", quartos=1, tem_garagem=False, valor_base=1200.0, vagas=vagas)
 
     def calcular_mensalidade(self, cliente) -> float:
-        # TODO: RED — base 1.200 + 2 vagas 250 + extra 60
-        return 0.0
+        valor = self._valor_base
+        if self._vagas >= 2:
+            valor += 250.0
+        if self._vagas > 2:
+            valor += (self._vagas - 2) * 60.0
+        return round(valor, 2)

@@ -1,5 +1,3 @@
-# data/database.py
-"""Camada de dados: CRUD sobre o SQLite (tabelas criadas por migrate.py)."""
 import sqlite3
 from pathlib import Path
 
