@@ -1,0 +1,55 @@
+@startuml
+title Modelo de Dados (ER) - Orçamento de Aluguel\nImobiliária R.M. | Algorithmic Thinking & POO
+
+' ===== Entidades =====
+entity "Cliente" as CLI {
+  * id_cliente : INT <<PK>>
+  --
+  nome : VARCHAR(100)
+  email : VARCHAR(100)
+  tem_criancas : BOOLEAN
+}
+
+entity "Imovel" as IMV {
+  * id_imovel : INT <<PK>>
+  --
+  tipo : ENUM('apartamento','casa','estudio')
+  quartos : INT
+  tem_garagem : BOOLEAN
+  valor_base : DECIMAL(10,2)
+  vagas : INT
+}
+
+entity "Orcamento" as ORC {
+  * id_orcamento : INT <<PK>>
+  --
+  id_cliente : INT <<FK>>
+  id_imovel : INT <<FK>>
+  valor_mensal : DECIMAL(10,2)
+  data_emissao : DATE
+}
+
+entity "Contrato" as CON {
+  * id_contrato : INT <<PK>>
+  --
+  id_orcamento : INT <<FK>>
+  valor_total : DECIMAL(10,2)
+  max_parcelas : INT
+}
+
+entity "Parcela" as PAR {
+  * id_parcela : INT <<PK>>
+  --
+  id_contrato : INT <<FK>>
+  numero : INT
+  valor : DECIMAL(10,2)
+  vencimento : DATE
+}
+
+' ===== Relacionamentos =====
+CLI ||--o{ ORC : "gera"
+IMV ||--o{ ORC : "é orçado em"
+ORC ||--|| CON : "origina"
+CON ||--o{ PAR : "possui"
+
+@enduml
